@@ -18,7 +18,7 @@ public class PoolableRBObject : MonoBehaviour, IPoolable
         // This only checks every few frames to save performance
         if (Time.frameCount % despawnCheckRefreshRate == 0)
         {
-            if (transform.position.x < PlayerController.PlayerTransform.position.x - DISTANCE_TO_DESPAWN)
+            if (transform.position.x < Player.Transform.position.x - DISTANCE_TO_DESPAWN)
             {
                 Despawn();
             }

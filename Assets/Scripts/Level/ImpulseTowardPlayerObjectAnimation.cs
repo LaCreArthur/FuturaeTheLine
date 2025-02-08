@@ -7,11 +7,11 @@ public class ImpulseTowardPlayerObjectAnimation : MonoBehaviour, IObjectAnimatio
 
     Rigidbody _rb;
     Transform _player;
-    
+
     void Start()
     {
         _rb = GetComponent<Rigidbody>();
-        _player = PlayerController.PlayerTransform;
+        _player = Player.Transform;
     }
 
     public void PlayAnimation()

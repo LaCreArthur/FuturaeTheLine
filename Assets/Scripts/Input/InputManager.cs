@@ -16,21 +16,38 @@ public class InputManager : MonoBehaviour
     [SerializeField] InputType inputType;
     [SerializeField] UIJoystickInput uiJoystickInput;
     [SerializeField] DragInput dragInput;
+    [SerializeField] float startSpeed = 5f;
+    [SerializeField] float speedIncreasePerSecond = 0.05f;
+
+    float _currentSpeed;
 
     AxisJoystickInput _axisJoystickInput;
     IPlayerInput _playerInput;
+    Vector2 _input;
+    Rigidbody _rb;
+    bool _isMoving;
 
     void Start()
     {
         _axisJoystickInput = new AxisJoystickInput(joystickSensitivity);
         uiJoystickInput.JoystickSensitivity = joystickSensitivity;
+        _rb = GetComponent<Rigidbody>();
+        GameStateManager.OnInGame += OnInGame;
+        GameStateManager.OnGameOver += OnGameOver;
+    }
+
+    void FixedUpdate()
+    {
+        if (!_isMoving) return;
+        Move();
     }
 
     void Update()
     {
-        if (GameStateManager.CurrentState != GameState.InGame) return;
+        if (!_isMoving) return;
         SelectInputType();
-        Move();
+        _input = _playerInput.ReadInput();
+        _currentSpeed += speedIncreasePerSecond * Time.deltaTime;
     }
 
     void SelectInputType()
@@ -48,10 +65,27 @@ public class InputManager : MonoBehaviour
 
     void Move()
     {
-        Vector2 input = _playerInput.ReadInput();
-        if (freezeX) input.x = 0;
-        if (freezeZ) input.y = 0;
-        transform.position += new Vector3(input.x, 0, input.y);
+        if (freezeX) _input.x = 0;
+        if (freezeZ) _input.y = 0;
+        Debug.Log(_input);
+        Vector3 newPos = _rb.position
+                         + new Vector3(_input.x, 0, _input.y)
+                         + Vector3.right * (_currentSpeed * Time.fixedDeltaTime);
+        _rb.MovePosition(newPos);
+    }
+
+    void OnGameOver()
+    {
+        _isMoving = false;
+        _rb.isKinematic = false;
+        _rb.linearVelocity = Vector3.zero;
+    }
+
+    void OnInGame()
+    {
+        _currentSpeed = startSpeed;
+        _isMoving = true;
+        _rb.isKinematic = true;
     }
 }
 

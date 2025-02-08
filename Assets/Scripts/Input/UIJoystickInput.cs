@@ -24,9 +24,6 @@ public class UIJoystickInput : MonoBehaviour, IPlayerInput, IDragHandler, IPoint
     {
         _startPosition = handleImage.rectTransform.anchoredPosition;
         _maxDragDistance = maxDragDistanceInInches * Screen.dpi;
-#if !UNITY_EDITOR
-        sensitivity *= 2;
-#endif
     }
 
     public void OnDrag(PointerEventData eventData)
